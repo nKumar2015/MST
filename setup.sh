@@ -13,7 +13,7 @@ curl -O https://os.unil.cloud.switch.ch/fma/fma_small.zip
 echo "Unzipping"
 
 echo "Unzipping Metadata"
-tar -xf  fma_metadata.zip
+unzip  fma_metadata.zip
 
 echo "Unzipping Dataset"
-tar -xf  fma_small.zip
+unzip  fma_small.zip
