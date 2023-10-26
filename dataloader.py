@@ -51,3 +51,6 @@ class MusicLoader(tf.keras.utils.Sequence):
 
     def __len__(self):
         return int(len(self.x)/self.batch_size)
+
+    def getX(self):
+        return self.x
