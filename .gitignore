@@ -3,3 +3,4 @@
 data/
 workspace.py
 __pycache__/
+checkpoints/
