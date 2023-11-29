@@ -37,6 +37,30 @@ for id, genre in train_content:
     continue
   
   source = data_dir + id[0:3] + "/" + id
+  destination = new_dir+"train_content/"
   shutil.move(source, destination)
 
+for id, genre in train_style:
+  if id in skiplist:
+    continue
+
+  source = data_dir + id[0:3] + "/" + id
+  destination = new_dir+"train_style/"
+  shutil.move(source, destination)
+
+for id, genre in test_content:
+  if id in skiplist:
+    continue
+
+  source = data_dir + id[0:3] + "/" + id
+  destination = new_dir+"test_content/"
+  shutil.move(source, destination)
+
+for id, genre in test_style:
+  if id in skiplist:
+    continue
+
+  source = data_dir + id[0:3] + "/" + id
+  destination = new_dir+"test_style/"
+  shutil.move(source, destination)
 
