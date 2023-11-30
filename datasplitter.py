@@ -15,7 +15,7 @@ skiplist = ["011298.mp3",
             "133297.mp3",
             "155066.mp3"]
 
-data = np.loadtxt("fma_small_genres.csv", delimiter=",", dtype=str, skiprows=1)
+data = np.loadtxt("./fma_small_genres.csv", delimiter=",", dtype=str, skiprows=1)
 
 data_dir = "./data/fma_small/"
 new_dir = "./data/fma/"
