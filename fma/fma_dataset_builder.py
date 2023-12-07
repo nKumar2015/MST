@@ -108,4 +108,5 @@ class Builder(tfds.core.GeneratorBasedBuilder):
                     'sgram_image': sgram,
                     'sample_rate': sample_rate,
                     'genre': genre,
+                    'chroma_gram': 
                 })

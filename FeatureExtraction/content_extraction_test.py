@@ -2,7 +2,7 @@ import librosa
 import numpy as np
 
 # Load the audio file
-audio_file_path = 'StarWars60.wav'
+audio_file_path = 'FeatureExtraction/StarWars60.wav'
 y, sr = librosa.load(audio_file_path)
 
 # Compute the Chroma Short-Time Fourier Transform (chroma_stft)
