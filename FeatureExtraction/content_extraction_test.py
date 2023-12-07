@@ -20,3 +20,7 @@ estimated_key = chroma_to_key[estimated_key_index]
 
 # Print the detected key
 print("Detected Key:", estimated_key)
+
+# Ignore detected key code above, just ues the chromagram and do a frame-wise cosine similarity
+# A frame-wise cosine similarity is for every frame, so do not use the mean_chroma value.
+# You calculate this value by sklearn.metrics.pairwise.cosine_similarity
