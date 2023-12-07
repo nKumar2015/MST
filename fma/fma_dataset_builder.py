@@ -103,10 +103,13 @@ class Builder(tfds.core.GeneratorBasedBuilder):
             genre = data[data[:, 0] == id][0, 1][3:-1]
             key = id[:-3]
             sgram, sample_rate = self.load_spectrogram(pathstring)
+
+            y, sr = librosa.load(path)
+            chromagram = librosa.feature.chroma_stft(y=y, sr=sr)
             if f not in self.skiplist:
                 yield (key, {
                     'sgram_image': sgram,
                     'sample_rate': sample_rate,
                     'genre': genre,
-                    'chroma_gram': 
+                    'chromagram': chromagram,
                 })
