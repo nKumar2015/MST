@@ -38,7 +38,6 @@ def load_spectrogram(path):
 
 # normalizing the images to [-1, 1]
 
-
 def normalize(image):
     image = tf.cast(image, tf.float32)
     image = (image / 127.5) - 1
@@ -94,7 +93,6 @@ generator_f = pix2pix.unet_generator(1, norm_type='instancenorm')
 
 discriminator_x = pix2pix.discriminator(norm_type='instancenorm', target=False)
 discriminator_y = pix2pix.discriminator(norm_type='instancenorm', target=False)
-
 
 contrast = 8
 
@@ -172,7 +170,6 @@ def train_step(real_x, real_y):
     with tf.GradientTape(persistent=True) as tape:
         # Generator G translates X -> Y
         # Generator F translates Y -> X.
-
         fake_y = generator_g(real_x, training=True)
         cycled_x = generator_f(fake_y, training=True)
 
@@ -234,7 +231,7 @@ for epoch in range(EPOCHS):
 
     n = 0
     for image_x, image_y in tf.data.Dataset.zip((train_content, train_style)):
-        train_step(image_x, image_y)
+        train_step(image_x['sgram_image'], image_y['sgram_image'])
         if n % 10 == 0:
             print('.', end='')
         n += 1
