@@ -4,7 +4,6 @@ import tensorflow_datasets as tfds
 import numpy as np
 import librosa
 import tensorflow as tf
-import matplotlib.pyplot as plt
 
 class Builder(tfds.core.GeneratorBasedBuilder):
     """DatasetBuilder for fma dataset."""
@@ -70,12 +69,13 @@ class Builder(tfds.core.GeneratorBasedBuilder):
                                                          'Power-Pop', 'Minimalism', 'Surf', 'Celtic', 'Sound Art', 'Post-Rock', 'Klezmer', 'Romany (Gypsy)',
                                                          'Kid-Friendly', 'Salsa', 'Chill-out', 'Shoegaze', 'Hip-Hop Beats', 'Rap', 'Dance', 'Goth', 'Grindcore',
                                                          'Instrumental', 'New Age', 'Glitch', 'Latin', 'Jungle', 'Reggae - Dancehall', 'Turkish', 'Cumbia', 'Nerdcore', 'Loud-Rock']),
+                'chromagram': tfds.features.Tensor(shape=(12, None), dtype=tf.float32)
             }),
             # If there's a common (input, target) tuple from the
             # features, specify them here. They'll be used if
             # `as_supervised=True` in `builder.as_dataset`.
             # Set to `None` to disable
-            supervised_keys=('sgram', 'sample_rate', 'genre'),
+            supervised_keys=('sgram', 'sample_rate', 'genre',),
             homepage='https://github.com/mdeff/fma',
         )
 
@@ -104,7 +104,7 @@ class Builder(tfds.core.GeneratorBasedBuilder):
             key = id[:-3]
             sgram, sample_rate = self.load_spectrogram(pathstring)
 
-            y, sr = librosa.load(path)
+            y, sr = librosa.load(pathstring)
             chromagram = librosa.feature.chroma_stft(y=y, sr=sr)
             if f not in self.skiplist:
                 yield (key, {
