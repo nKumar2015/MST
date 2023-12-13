@@ -20,9 +20,14 @@ train_rock, train_noise_rock = dataset['train_rock'], dataset['train_noise_rock'
 test_rock, test_noise_rock = dataset['test_rock'], dataset['test_noise_rock']
 
 BUFFER_SIZE = 1000
-BATCH_SIZE = 3
+BATCH_SIZE = 1
 IMG_WIDTH = 256
 IMG_HEIGHT = 256
+
+def scale_minmax(X, min=0.0, max=1.0):
+    X_std = (X - X.min()) / (X.max() - X.min())
+    X_scaled = X_std * (max - min) + min
+    return X_scaled
 
 def random_crop(image):
   cropped_image = tf.image.random_crop(
@@ -38,19 +43,6 @@ def normalize(image):
 
 def unNormalize(image):
   image = (image + 1) * 127.5
-  return image
-
-def random_jitter(image):
-  # resizing to 286 x 286 x 3
-  image = tf.image.resize(image, [286, 286],
-                          method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
-
-  # randomly cropping to 256 x 256 x 3
-  image = random_crop(image)
-
-  # random mirroring
-  image = tf.image.random_flip_left_right(image)
-
   return image
 
 
@@ -152,12 +144,16 @@ if ckpt_manager.latest_checkpoint:
   ckpt.restore(ckpt_manager.latest_checkpoint)
   print('Latest checkpoint restored!!')
 
-EPOCHS = 10
-
+EPOCHS = 100
 
 def generate_images(model, test_input, number):
   prediction = model(test_input).numpy()
-  audio = librosa.feature.inverse.mel_to_audio(prediction)
+  mel_sgram = librosa.amplitude_to_db(prediction[0], ref=np.min)
+  librosa.display.specshow(scale_minmax(mel_sgram), sr=22050,
+                            x_axis='time', y_axis='mel')
+  plt.colorbar(format='%+2.0f dB')
+  plt.show()
+  audio = librosa.feature.inverse.mel_to_audio(mel_sgram)
   print(audio.shape)
   soundfile.write('./results/'+str(number)+".wav", unNormalize(audio[0]), 22050, 'PCM_24', format='WAV')
 
