@@ -13,54 +13,51 @@ skiplist = ["011298.mp3",
             "099134.mp3",
             "108925.mp3",
             "133297.mp3",
-            "155066.mp3"]
+            "155066.mp3",
+            "003950.mp3"]
 
-data = np.loadtxt("./fma_small_genres.csv", delimiter=",", dtype=str, skiprows=1)
+data = np.loadtxt("./fma_small_genres.csv",
+                  delimiter=",", dtype=str, skiprows=1)
 
 data_dir = "./data/fma_small/"
 new_dir = "./data/fma/"
 
-train_portion, test_portion = round(len(data)*0.8), round(len(data)*0.2)
+rock_songs = []
+noise_rock_songs = []
 
-train = data[0:train_portion,:]
-test = data[train_portion:,:]
+for item in data:
+    if item[0] in skiplist:
+        continue
+    if item[1] == 'Rock':
+        rock_songs.append(item[0])
+    if item[1] == 'Noise-Rock':
+        noise_rock_songs.append(item[0])
 
-train_content, train_style = np.split(train, 2)
-test_content, test_style = np.split(test, 2)
+train_rock_idx, test_rock_idx = round(
+    len(rock_songs)*0.8), round(len(rock_songs)*0.2)
+train_noise_rock_idx, test_noise_rock_idx = round(
+    len(noise_rock_songs)*0.8), round(len(noise_rock_songs)*0.2)
 
-print(train_content)
+train_rock, test_rock = rock_songs[0:train_rock_idx], rock_songs[train_rock_idx:]
+train_noise_rock, test_noise_rock = noise_rock_songs[0:train_noise_rock_idx], noise_rock_songs[train_noise_rock_idx:]
 
-# Rock to Noise-Rock
+for id in train_rock:
+    source = data_dir + id[0:3] + "/" + id
+    destination = new_dir+"train_rock/"
+    shutil.copy(source, destination)
 
-for id, genre in train_content:
-  if id in skiplist: 
-    continue
+for id in test_rock:
+    source = data_dir + id[0:3] + "/" + id
+    destination = new_dir+"test_rock/"
+    shutil.copy(source, destination)
+
+for id in train_noise_rock:
+    source = data_dir + id[0:3] + "/" + id
+    destination = new_dir+"train_noise_rock/"
+    shutil.copy(source, destination)
+
+for id in test_noise_rock:
+    source = data_dir + id[0:3] + "/" + id
+    destination = new_dir+"test_noise_rock/"
+    shutil.copy(source, destination)
   
-  source = data_dir + id[0:3] + "/" + id
-  destination = new_dir+"train_content/"
-  shutil.move(source, destination)
-
-for id, genre in train_style:
-  if id in skiplist:
-    continue
-
-  source = data_dir + id[0:3] + "/" + id
-  destination = new_dir+"train_style/"
-  shutil.move(source, destination)
-
-for id, genre in test_content:
-  if id in skiplist:
-    continue
-
-  source = data_dir + id[0:3] + "/" + id
-  destination = new_dir+"test_content/"
-  shutil.move(source, destination)
-
-for id, genre in test_style:
-  if id in skiplist:
-    continue
-
-  source = data_dir + id[0:3] + "/" + id
-  destination = new_dir+"test_style/"
-  shutil.move(source, destination)
-
