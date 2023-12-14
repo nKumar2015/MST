@@ -153,9 +153,9 @@ def generate_images(model, test_input, number):
                             x_axis='time', y_axis='mel')
   plt.colorbar(format='%+2.0f dB')
   plt.show()
-  audio = librosa.feature.inverse.mel_to_audio(mel_sgram)
-  print(audio.shape)
-  soundfile.write('./results/'+str(number)+".wav", unNormalize(audio[0]), 22050, 'PCM_24', format='WAV')
+  #audio = librosa.feature.inverse.mel_to_audio(mel_sgram)
+  #print(audio.shape)
+  #soundfile.write('./results/'+str(number)+".wav", unNormalize(audio[0]), 22050, 'PCM_24', format='WAV')
 
 
 @tf.function
