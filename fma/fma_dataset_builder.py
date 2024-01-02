@@ -13,11 +13,6 @@ class Builder(tfds.core.GeneratorBasedBuilder):
         '1.0.0': 'Initial Release',
     }
 
-    def scale_minmax(self, X, min=0.0, max=1.0):
-        X_std = (X - X.min()) / (X.max() - X.min())
-        X_scaled = X_std * (max - min) + min
-        return X_scaled
-
     def load_spectrogram(self, samples, sr):
         sgram = librosa.stft(samples)
 
@@ -27,7 +22,7 @@ class Builder(tfds.core.GeneratorBasedBuilder):
         mels = librosa.amplitude_to_db(mels, ref=np.min)
         mels = np.log(mels + 1e-9)
         mels = mels.astype(np.uint8)
-        return mels, sr
+        return mels
 
     def _info(self) -> tfds.core.DatasetInfo:
         """Returns the dataset metadata."""
@@ -35,16 +30,16 @@ class Builder(tfds.core.GeneratorBasedBuilder):
         return self.dataset_info_from_configs(
             features=tfds.features.FeaturesDict({
                 # These are the features of your dataset like images, labels ...
-                'sgram': tfds.features.Image(shape=(128, 1293, 3)),
+                'sgram': tfds.features.Image(shape=(128, 1408, 3)),
                 'sample_rate': tfds.features.Scalar(dtype=tf.float32),
-                'chromagram': tfds.features.Tensor(shape=(12, None), dtype=tf.float32),
+                #'chromagram': tfds.features.Tensor(shape=(12, None), dtype=tf.float32),
                 'path': tfds.features.Text()
             }),
             # If there's a common (input, target) tuple from the
             # features, specify them here. They'll be used if
             # `as_supervised=True` in `builder.as_dataset`.
             # Set to `None` to disable
-            supervised_keys=('sgram', 'sample_rate',),
+            supervised_keys=('sgram', 'sample_rate', 'path'),
             homepage='https://github.com/mdeff/fma',
         )
 
@@ -70,16 +65,19 @@ class Builder(tfds.core.GeneratorBasedBuilder):
             pathstring = str(f)
             id = pathstring[-10:]
             key = id[:-3]
-            y, sr = librosa.load(pathstring)
-            sgram, sample_rate = self.load_spectrogram(y, sr)
-            chromagram = librosa.feature.chroma_stft(y=y, sr=sr)
-            sgram = np.pad(sgram, [(0, 0), (0, 1293-sgram.shape[1])],
+
+            y, sr = librosa.load(pathstring, sr=22050, duration=30.0, mono=True)
+
+            sgram = self.load_spectrogram(y, sr)
+            #chromagram = librosa.feature.chroma_stft(y=y, sr=sr)
+
+            sgram = np.pad(sgram, [(0, 0), (0, 1408-sgram.shape[1])],
                            mode='constant', constant_values=0)
             sgram = np.dstack((sgram, sgram, sgram))
 
             yield (key, {
                 'sgram': sgram,
-                'sample_rate': sample_rate,
-                'chromagram': chromagram,
+                'sample_rate': sr,
+                #'chromagram': chromagram,
                 'path': pathstring,
             })

@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow_examples.models.pix2pix import pix2pix
+from Custom_CycleGan import unet_generator, discriminator
 
 import os
 import time
@@ -9,7 +9,6 @@ from IPython.display import clear_output
 import librosa
 import numpy as np
 import soundfile
-
 
 AUTOTUNE = tf.data.AUTOTUNE
 
@@ -21,8 +20,8 @@ test_rock, test_noise_rock = dataset['test_rock'], dataset['test_noise_rock']
 
 BUFFER_SIZE = 1000
 BATCH_SIZE = 1
-IMG_WIDTH = 256
-IMG_HEIGHT = 256
+IMG_WIDTH = 1294
+IMG_HEIGHT = 128
 
 def scale_minmax(X, min=0.0, max=1.0):
     X_std = (X - X.min()) / (X.max() - X.min())
@@ -46,16 +45,12 @@ def unNormalize(image):
   return image
 
 
-def preprocess_image_train(image, label):
-  image = tf.image.resize(image, [256, 256],
-                          method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+def preprocess_image_train(image, sr, path):
   image = normalize(image)
   return image
 
 
-def preprocess_image_test(image, label):
-  image = tf.image.resize(image, [256, 256],
-                          method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+def preprocess_image_test(image, sr, path):
   image = normalize(image)
   return image
 
@@ -81,11 +76,11 @@ sample_noise_rock = next(iter(train_noise_rock))
 
 OUTPUT_CHANNELS = 3
 
-generator_g = pix2pix.unet_generator(OUTPUT_CHANNELS, norm_type='instancenorm')
-generator_f = pix2pix.unet_generator(OUTPUT_CHANNELS, norm_type='instancenorm')
+generator_g = unet_generator(OUTPUT_CHANNELS, norm_type='instancenorm')
+generator_f = unet_generator(OUTPUT_CHANNELS, norm_type='instancenorm')
 
-discriminator_x = pix2pix.discriminator(norm_type='instancenorm', target=False)
-discriminator_y = pix2pix.discriminator(norm_type='instancenorm', target=False)
+discriminator_x = discriminator(norm_type='instancenorm', target=False)
+discriminator_y = discriminator(norm_type='instancenorm', target=False)
 
 to_noise_rock = generator_g(sample_rock)
 to_rock = generator_f(sample_noise_rock)
@@ -120,11 +115,11 @@ def identity_loss(real_image, same_image):
   return LAMBDA * 0.5 * loss
 
 
-generator_g_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
-generator_f_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+generator_g_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
+generator_f_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
 
-discriminator_x_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
-discriminator_y_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+discriminator_x_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
+discriminator_y_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
 
 checkpoint_path = "./checkpoints/train"
 
@@ -144,10 +139,12 @@ if ckpt_manager.latest_checkpoint:
   ckpt.restore(ckpt_manager.latest_checkpoint)
   print('Latest checkpoint restored!!')
 
-EPOCHS = 100
+EPOCHS = 1
 
 def generate_images(model, test_input, number):
   prediction = model(test_input).numpy()
+  #Note, the shape of the output is 128 x 1408. 
+  #Remember to crop to 128, 1293 before saving as audio.
   mel_sgram = librosa.amplitude_to_db(prediction[0], ref=np.min)
   librosa.display.specshow(scale_minmax(mel_sgram), sr=22050,
                             x_axis='time', y_axis='mel')
