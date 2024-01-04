@@ -4,3 +4,5 @@ data/
 workspace.py
 __pycache__/
 checkpoints/
+Diffusion/data/
+Diffusion/diffusers
