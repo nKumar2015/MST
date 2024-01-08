@@ -144,19 +144,15 @@ if ckpt_manager.latest_checkpoint:
   ckpt.restore(ckpt_manager.latest_checkpoint)
   print('Latest checkpoint restored!!')
 
-EPOCHS = 5
+EPOCHS = 10
 
 def generate_images(model, test_input, number):
   prediction = model(test_input).numpy()
   #mel_sgram = librosa.amplitude_to_db(prediction[0], ref=np.min)
-  mel_sgram = mel_sgram
-  librosa.display.specshow(scale_minmax(mel_sgram), sr=22050,
-                            x_axis='time', y_axis='mel')
-  plt.colorbar(format='%+2.0f dB')
-  plt.show()
-  #audio = librosa.feature.inverse.mel_to_audio(mel_sgram)
-  #print(audio.shape)
-  #soundfile.write('./results/'+str(number)+".wav", unNormalize(audio[0]), 22050, 'PCM_24', format='WAV')
+  mel_sgram = prediction[0]
+  audio = librosa.feature.inverse.mel_to_audio(mel_sgram)
+  print(audio.shape)
+  soundfile.write('./results/'+str(number)+".wav", unNormalize(audio[0]), 22050)
 
 
 @tf.function

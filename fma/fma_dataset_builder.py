@@ -24,7 +24,6 @@ class Builder(tfds.core.GeneratorBasedBuilder):
         sgram_mag, _ = librosa.magphase(sgram)
 
         mels = librosa.feature.melspectrogram(S=sgram_mag, sr=sr)
-        mels = librosa.amplitude_to_db(mels, ref=np.min)
         mels = np.log(mels + 1e-9)
         mels = mels.astype(np.uint8)
         return mels, sr
