@@ -1,6 +1,6 @@
 """fma dataset."""
 
-from . import fma_dataset_builder
+import fma_dataset_builder
 import tensorflow_datasets as tfds
 
 class FmaTest(tfds.testing.DatasetBuilderTestCase):
