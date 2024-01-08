@@ -148,7 +148,8 @@ EPOCHS = 5
 
 def generate_images(model, test_input, number):
   prediction = model(test_input).numpy()
-  mel_sgram = librosa.amplitude_to_db(prediction[0], ref=np.min)
+  #mel_sgram = librosa.amplitude_to_db(prediction[0], ref=np.min)
+  mel_sgram = mel_sgram
   librosa.display.specshow(scale_minmax(mel_sgram), sr=22050,
                             x_axis='time', y_axis='mel')
   plt.colorbar(format='%+2.0f dB')
