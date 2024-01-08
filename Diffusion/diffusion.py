@@ -26,7 +26,7 @@ class TrainingConfig:
     lr_warmup_steps = 500
     save_image_epochs = 10
     save_model_epochs = 30
-    mixed_precision = "fp16"  # `no` for float32, `fp16` for automatic mixed precision
+    mixed_precision = "no"  # `no` for float32, `fp16` for automatic mixed precision
     output_dir = "ddpm-MST-256"  # the model name locally and on the HF Hub
 
     push_to_hub = True  # whether to upload the saved model to the HF Hub
@@ -47,6 +47,7 @@ for i, image in enumerate(dataset[:4]["image"]):
     axs[i].imshow(image)
     axs[i].set_axis_off()
 fig.show()
+plt.show()
 
 preprocess = transforms.Compose(
     [
