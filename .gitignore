@@ -7,3 +7,4 @@ checkpoints/
 Diffusion/data/
 Diffusion/diffusers
 Diffusion/ddpm-MST-256
+fma_small.zip
