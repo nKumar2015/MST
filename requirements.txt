@@ -1,7 +1,0 @@
-tensorflow
-tfds-nightly
-matplotlib
-librosa
-IPython
-pandas
-git+https://github.com/tensorflow/examples.git
